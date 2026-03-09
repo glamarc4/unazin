@@ -4,7 +4,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:unazin/services/student_controller.dart';
 
 class StudentDetailCard extends StatefulWidget {
-  const StudentDetailCard({super.key});
+  /// Chamado após salvar; pode ser async para atualizar o nome no banner.
+  final Future<void> Function()? onSaved;
+
+  const StudentDetailCard({super.key, this.onSaved});
 
   @override
   State<StudentDetailCard> createState() => _StudentDetailCardState();
@@ -20,6 +23,8 @@ class _StudentDetailCardState extends State<StudentDetailCard> {
   String _id = '';
   String _photo = ''; // Pode ser URL ou caminho de arquivo
   String _course = '';
+  String _email = '';
+  String _yearSemester = '';
 
   @override
   void initState() {
@@ -35,6 +40,8 @@ class _StudentDetailCardState extends State<StudentDetailCard> {
       _id = data['id']!;
       _photo = data['photo']!;
       _course = data['course']!;
+      _email = data['email']!;
+      _yearSemester = data['yearSemester']!;
     });
   }
 
@@ -61,6 +68,8 @@ class _StudentDetailCardState extends State<StudentDetailCard> {
     final lastNameController = TextEditingController(text: _lastName);
     final idController = TextEditingController(text: _id);
     final photoController = TextEditingController(text: _photo);
+    final emailController = TextEditingController(text: _email);
+    final yearSemesterController = TextEditingController(text: _yearSemester);
     String tempCourse = _course;
 
     showModalBottomSheet(
@@ -80,9 +89,12 @@ class _StudentDetailCardState extends State<StudentDetailCard> {
               const SizedBox(height: 20),
               TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Nome', border: OutlineInputBorder())),
               const SizedBox(height: 12),
+              TextField(controller: emailController, decoration: const InputDecoration(labelText: 'E-mail', border: OutlineInputBorder()), keyboardType: TextInputType.emailAddress),
+              const SizedBox(height: 12),
+              TextField(controller: yearSemesterController, decoration: const InputDecoration(labelText: 'Ano/Semestre (ex: 2024/2)', border: OutlineInputBorder())),
+              const SizedBox(height: 12),
               TextField(controller: lastNameController, decoration: const InputDecoration(labelText: 'Sobrenome', border: OutlineInputBorder())),
               const SizedBox(height: 12),
-              
               // CAMPO DE FOTO COM BOTÃO DE GALERIA
               Row(
                 children: [
@@ -117,13 +129,18 @@ class _StudentDetailCardState extends State<StudentDetailCard> {
                   style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2F749B)),
                   onPressed: () async {
                     await _studentController.saveStudentData(
-                      name: nameController.text,
-                      lastName: lastNameController.text,
-                      id: idController.text,
-                      photoUrl: photoController.text,
+                      name: nameController.text.trim(),
+                      lastName: lastNameController.text.trim(),
+                      id: idController.text.trim(),
+                      photoUrl: photoController.text.trim(),
                       course: tempCourse,
+                      email: emailController.text.trim(),
+                      yearSemester: yearSemesterController.text.trim(),
                     );
-                    _loadStoredData();
+                    await _loadStoredData();
+                    if (context.mounted && widget.onSaved != null) {
+                      await widget.onSaved!();
+                    }
                     if (context.mounted) Navigator.pop(context);
                   },
                   child: const Text('Salvar Alterações', style: TextStyle(color: Colors.white)),

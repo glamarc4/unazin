@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class WelcomeBanner extends StatelessWidget {
   final VoidCallback onTap;
   final bool isExpanded;
+  final String studentName;
 
   const WelcomeBanner({
     super.key,
     required this.onTap,
     required this.isExpanded,
+    this.studentName = 'Gabriel',
   });
 
   @override
@@ -54,7 +56,7 @@ class WelcomeBanner extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                'Olá Gabriel, seja bem-vindo(a)!',
+                'Olá ${studentName.isNotEmpty ? studentName : 'Gabriel'}, seja bem-vindo(a)!',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   // Removi o const aqui por causa do withOpacity

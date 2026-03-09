@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unazin/services/student_controller.dart';
 import 'package:unazin/components/accessibility_button.dart';
 import 'package:unazin/components/app_footer.dart';
 import 'package:unazin/components/change_course_button.dart';
@@ -26,6 +27,29 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool _isDetailExpanded = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  String _studentName = 'Gabriel';
+  String _studentCourse = 'Engenharia de Software';
+  String _studentEmail = 'gabriel.lasilva@sou.unaerp.edu.br';
+  String _studentYearSemester = '2024/2';
+  final StudentController _studentController = StudentController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStudentData();
+  }
+
+  Future<void> _loadStudentData() async {
+    final data = await _studentController.loadStudentData();
+    if (mounted) {
+      setState(() {
+        _studentName = data['name']!;
+        _studentCourse = data['course']!;
+        _studentEmail = data['email']!;
+        _studentYearSemester = data['yearSemester']!;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Column(
                       children: [
                         WelcomeBanner(
+                          studentName: _studentName,
                           isExpanded: _isDetailExpanded,
                           onTap: () => setState(
                             () => _isDetailExpanded = !_isDetailExpanded,
@@ -71,12 +96,16 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         if (_isDetailExpanded) ...[
                           const SizedBox(height: 6),
-                          const StudentDetailCard(),
+                          StudentDetailCard(onSaved: () async => await _loadStudentData()),
                           const SizedBox(height: 10),
                         ] else ...[
                           const SizedBox(height: 8),
                         ],
-                        const StudentInfoCard(),
+                        StudentInfoCard(
+                          course: _studentCourse,
+                          email: _studentEmail,
+                          yearSemester: _studentYearSemester,
+                        ),
                         const SizedBox(height: 14),
                         const ChangeCourseButton(),
                         const SizedBox(height: 14),

@@ -5,9 +5,11 @@ class DashboardStatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 360px = Galaxy S22 e telas pequenas; 380 garante margem e evita overflow
+    final isNarrow = MediaQuery.sizeOf(context).width <= 380;
     return Container(
       width: double.infinity,
-      height: 36,
+      height: isNarrow ? 32 : 36,
       decoration: BoxDecoration(
         color: const Color(0xFF1CA5ED),
         borderRadius: BorderRadius.circular(4),
@@ -26,6 +28,7 @@ class DashboardStatsRow extends StatelessWidget {
             // --- Lado Esquerdo ---
             Expanded(
               child: _buildItem(
+                context: context,
                 icon: Icons.description_outlined,
                 label: 'Novos arquivos',
                 count: '0',
@@ -42,6 +45,7 @@ class DashboardStatsRow extends StatelessWidget {
             // --- Lado Direito ---
             Expanded(
               child: _buildItem(
+                context: context,
                 icon: Icons.copy_all,
                 label: 'Novos avisos',
                 count: '0',
@@ -54,63 +58,82 @@ class DashboardStatsRow extends StatelessWidget {
   }
 
   Widget _buildItem({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required String count,
   }) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final isNarrow = screenWidth <= 380;
+
+    final padding = isNarrow ? 4.0 : 10.0;
+    final spacing = isNarrow ? 4.0 : 20.0;
+    final fontSize = isNarrow ? 10.0 : 14.0;
+    final iconSize = isNarrow ? 12.0 : 18.0;
+    final iconPadding = isNarrow ? 2.0 : 4.0;
+
+    final textStyle = TextStyle(
+      fontFamily: 'Arial',
+      color: Colors.white,
+      fontSize: fontSize,
+      shadows: [
+        Shadow(
+          offset: const Offset(1, 1),
+          blurRadius: 2,
+          color: Colors.black.withOpacity(0.4),
+        ),
+      ],
+    );
+
+    final boldStyle = textStyle.copyWith(fontWeight: FontWeight.bold);
+
+    final content = Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: EdgeInsets.all(iconPadding),
+          decoration: BoxDecoration(
+            color: const Color(0x1972A3).withOpacity(1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: Colors.white, size: iconSize),
+        ),
+        SizedBox(width: spacing),
+        Text(
+          '$label: ',
+          style: textStyle,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+        ),
+        Text(
+          count,
+          style: boldStyle,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+        ),
+      ],
+    );
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: () {},
         child: Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: const Color(0x1972A3).withOpacity(1),
-                  shape: BoxShape.circle,
+          padding: EdgeInsets.symmetric(horizontal: padding),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: constraints.maxWidth,
+                  ),
+                  child: content,
                 ),
-                child: Icon(icon, color: Colors.white, size: 18),
-              ),
-
-              const SizedBox(width: 20),
-
-              // Texto com Sombra
-              Text(
-                '$label: ',
-                style: TextStyle(
-                  fontFamily: 'Arial',
-                  color: Colors.white,
-                  fontSize: 14,
-                  shadows: [
-                    Shadow(
-                      offset: const Offset(1, 1),
-                      blurRadius: 2,
-                      color: Colors.black.withOpacity(0.4),
-                    ),
-                  ],
-                ),
-              ),
-              Text(
-                count,
-                style: TextStyle(
-                  fontFamily: 'Arial',
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  shadows: [
-                    Shadow(
-                      offset: const Offset(1, 1),
-                      blurRadius: 2,
-                      color: Colors.black.withOpacity(0.4),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),

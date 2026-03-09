@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 
 class StudentInfoCard extends StatelessWidget {
-  const StudentInfoCard({super.key});
+  final String course;
+  final String email;
+  final String yearSemester;
+
+  const StudentInfoCard({
+    super.key,
+    this.course = 'Engenharia de Software',
+    this.email = 'gabriel.lasilva@sou.unaerp.edu.br',
+    this.yearSemester = '2024/2',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,29 +36,27 @@ class StudentInfoCard extends StatelessWidget {
           // Espaço zero ou minúsculo entre label e valor
           const SizedBox(height: 2),
 
-          const Text(
-            'Engenharia de Software',
-            style: TextStyle(
+          Text(
+            course,
+            style: const TextStyle(
               fontFamily: 'Roboto',
               fontSize: 15,
-              // AJUSTE: w600 é um negrito mais suave que o Bold padrão
               fontWeight: FontWeight.w600,
               color: Colors.black87,
-              height: 1.1, // Altura da linha reduzida para aproximar
+              height: 1.1,
             ),
           ),
 
-          const SizedBox(height: 10), // Reduzi o espaço entre blocos
+          const SizedBox(height: 10),
 
           _buildLabel('USUÁRIO GOOGLE EDUCATION'),
           const SizedBox(height: 2),
 
-          const Text(
-            'gabriel.lasilva@sou.unaerp.edu.br',
-            style: TextStyle(
+          Text(
+            email,
+            style: const TextStyle(
               fontFamily: 'Roboto',
-              fontSize: 14, // Um pouco menor que o título
-              // AJUSTE: w500 (Medium) para não ficar muito fino/apagado
+              fontSize: 14,
               fontWeight: FontWeight.w500,
               color: Colors.black87,
               height: 1.1,
@@ -63,7 +70,7 @@ class StudentInfoCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildCompactColumn('ANO/SEM.', '2024/2'),
+              _buildCompactColumn('ANO/SEM.', yearSemester),
               const SizedBox(width: 24),
               _buildCompactColumn('ETAPA', '8'),
               const SizedBox(width: 24),

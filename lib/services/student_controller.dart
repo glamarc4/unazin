@@ -7,6 +7,8 @@ class StudentController {
   static const String _keyId = 'id';
   static const String _keyPhoto = 'photo';
   static const String _keyCourse = 'course';
+  static const String _keyEmail = 'email';
+  static const String _keyYearSemester = 'yearSemester';
 
   // Salva os dados no SharedPreferences
   Future<void> saveStudentData({
@@ -15,6 +17,8 @@ class StudentController {
     required String id,
     required String photoUrl,
     required String course,
+    required String email,
+    required String yearSemester,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keyName, name);
@@ -22,6 +26,8 @@ class StudentController {
     await prefs.setString(_keyId, id);
     await prefs.setString(_keyPhoto, photoUrl);
     await prefs.setString(_keyCourse, course);
+    await prefs.setString(_keyEmail, email);
+    await prefs.setString(_keyYearSemester, yearSemester);
   }
 
   // Carrega os dados ou retorna valores padrão se estiver vazio
@@ -33,6 +39,8 @@ class StudentController {
       'id': prefs.getString(_keyId) ?? '836666',
       'photo': prefs.getString(_keyPhoto) ?? 'https://i.pravatar.cc/150?u=836666',
       'course': prefs.getString(_keyCourse) ?? 'Engenharia',
+      'email': prefs.getString(_keyEmail) ?? 'gabriel.lasilva@sou.unaerp.edu.br',
+      'yearSemester': prefs.getString(_keyYearSemester) ?? '2024/2',
     };
   }
 }
